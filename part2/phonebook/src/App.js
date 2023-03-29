@@ -9,7 +9,92 @@ const Person = ({ name, number }) => {
   );
 };
 
-function App() {
+const Contacts = ({ filter, persons, filteredPersons }) => {
+  if (filter === "") {
+    return persons.map((person) => (
+      <Person key={person.name} name={person.name} number={person.number} />
+    ));
+  } else {
+    return filteredPersons.map((person) => (
+      <Person key={person.name} name={person.name} number={person.number} />
+    ));
+  }
+};
+
+const Filter = ({ persons, setFilteredPersons, setFilter }) => {
+  const handleFilterChange = (event) => {
+    const filterValue = event.target.value;
+    let personsFilterTemp = [];
+
+    for (let i = 0; i < persons.length; i++) {
+      if (persons[i].name.toLowerCase().includes(filterValue.toLowerCase())) {
+        personsFilterTemp = personsFilterTemp.concat(persons[i]);
+      }
+    }
+    setFilteredPersons(personsFilterTemp);
+    setFilter(filterValue);
+  };
+
+  return (
+    <>
+      Filter by name: <input onChange={handleFilterChange} />
+    </>
+  );
+};
+
+const AddContactForm = ({
+  persons,
+  setPersons,
+  newNumber,
+  setNewNumber,
+  newName,
+  setNewName,
+}) => {
+  const addPerson = (event) => {
+    event.preventDefault();
+    const newPerson = {
+      name: newName,
+      number: newNumber,
+    };
+    /** Comment in if you use areTheseObjectsEqual() */
+    /*const isNotAdded = !persons.find((element) =>
+      areTheseObjectsEqual(newPerson, element)
+    );*/
+    const isNotAdded = !persons.find(
+      (element) => newPerson.name === element.name
+    );
+
+    if (isNotAdded) {
+      setPersons(persons.concat(newPerson));
+    } else {
+      alert(`${newName} is already added to phonebook!`);
+    }
+  };
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value);
+  };
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value);
+  };
+
+  return (
+    <form onSubmit={addPerson}>
+      <div>
+        Name: <input value={newName} onChange={handleNameChange} />
+      </div>
+      <div>
+        Number: <input value={newNumber} onChange={handleNumberChange} />
+      </div>
+      <div>
+        <button type="submit">Add</button>
+      </div>
+    </form>
+  );
+};
+
+const App = () => {
   const [persons, setPersons] = useState([
     { name: "Arto Hellas", number: "040-1234567" },
     { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
@@ -18,6 +103,8 @@ function App() {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [filteredPersons, setFilteredPersons] = useState(persons);
+  const [filter, setFilter] = useState("");
 
   /** Function checking for equality of two objects.
    *  Use only if the application should save different numbers under the same name
@@ -48,58 +135,31 @@ function App() {
     return true;
   };*/
 
-  const addPerson = (event) => {
-    event.preventDefault();
-    const newPerson = {
-      name: newName,
-      number: newNumber,
-    };
-    /** Comment in if you use areTheseObjectsEqual() */
-    /*const isNotAdded = !persons.find((element) =>
-      areTheseObjectsEqual(newPerson, element)
-    );*/
-    const isNotAdded = !persons.find(
-      (element) => newPerson.name === element.name
-    );
-    if (isNotAdded) {
-      setPersons(persons.concat(newPerson));
-    } else {
-      alert(`${newName} is already added to phonebook!`);
-    }
-  };
-
-  const handleNameChange = (event) => {
-    setNewName(event.target.value);
-  };
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value);
-  };
-
-  const handleFilterChange = (event) => {};
-
   return (
     <>
       <h2>Phonebook</h2>
-      Filter by name: <input onChange={handleFilterChange} />
+      <Filter
+        persons={persons}
+        setFilteredPersons={setFilteredPersons}
+        setFilter={setFilter}
+      />
       <h2>Add new Contact</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          Name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          Number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">Add</button>
-        </div>
-      </form>
+      <AddContactForm
+        persons={persons}
+        setPersons={setPersons}
+        newNumber={newNumber}
+        setNewNumber={setNewNumber}
+        newName={newName}
+        setNewName={setNewName}
+      />
       <h2>Numbers</h2>
-      {persons.map((person) => (
-        <Person key={person.name} name={person.name} number={person.number} />
-      ))}
+      <Contacts
+        filter={filter}
+        persons={persons}
+        filteredPersons={filteredPersons}
+      />
     </>
   );
-}
+};
 
 export default App;
