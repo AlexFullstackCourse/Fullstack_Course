@@ -1,19 +1,34 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persons";
 
-const Person = ({ name, number }) => {
+const Person = ({ name, number, id, persons, setPersons }) => {
+  const handleDelete = (id) => {
+    if (window.confirm(`Delete ${name} from Contacts?`)) {
+      personService.remove(id);
+      setPersons(persons.filter((person) => person.id !== id));
+    }
+  };
+
   return (
     <>
       {name} {number}
+      <button onClick={() => handleDelete(id)}>Delete</button>
       <br />
     </>
   );
 };
 
-const Contacts = ({ filter, persons, filteredPersons }) => {
+const Contacts = ({ filter, persons, filteredPersons, setPersons }) => {
   if (filter === "") {
     return persons.map((person) => (
-      <Person key={person.name} name={person.name} number={person.number} />
+      <Person
+        key={person.name}
+        name={person.name}
+        number={person.number}
+        id={person.id}
+        persons={persons}
+        setPersons={setPersons}
+      />
     ));
   } else {
     return filteredPersons.map((person) => (
@@ -57,18 +72,32 @@ const AddContactForm = ({
       name: newName,
       number: newNumber,
     };
-    /** Comment in if you use areTheseObjectsEqual() */
-    /*const isNotAdded = !persons.find((element) =>
-      areTheseObjectsEqual(newPerson, element)
-    );*/
+
     const isNotAdded = !persons.find(
       (element) => newPerson.name === element.name
     );
 
     if (isNotAdded) {
-      setPersons(persons.concat(newPerson));
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => setPersons(persons.concat(returnedPerson)));
     } else {
-      alert(`${newName} is already added to phonebook!`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook. Replace old number with a new one?`
+        )
+      ) {
+        let updatedPerson = persons.find((person) => person.name === newName);
+        updatedPerson.number = newNumber;
+        const tempID = updatedPerson.id;
+        personService
+          .update(tempID, updatedPerson)
+          .then((returnedPerson) =>
+            setPersons(
+              persons.map((p) => (p.id !== tempID ? p : returnedPerson))
+            )
+          );
+      }
     }
   };
 
@@ -103,39 +132,8 @@ const App = () => {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((response) => setPersons(response.data));
+    personService.getAll().then((response) => setPersons(response));
   }, []);
-
-  /** Function checking for equality of two objects.
-   *  Use only if the application should save different numbers under the same name
-   */
-  /*
-  const areTheseObjectsEqual = (first, second) => {
-    const firstProperties = Object.getOwnPropertyNames(first);
-    const secondProperties = Object.getOwnPropertyNames(second);
-    /** Check for same number of properties 
-    if (firstProperties.length !== secondProperties.length) {
-      return false;
-    }
-    /** Check if the same properties are contained in both objects
-    const hasAllKeys = firstProperties.every(
-      (value) => !!secondProperties.find((v) => v === value)
-    );
-
-    if (!hasAllKeys) {
-      return false;
-    }
-    /** Check if all properties have the same values in both objects 
-    for (const key of firstProperties) {
-      if (first[key] !== second[key]) {
-        return false;
-      }
-    }
-
-    return true;
-  };*/
 
   return (
     <>
@@ -159,6 +157,7 @@ const App = () => {
         filter={filter}
         persons={persons}
         filteredPersons={filteredPersons}
+        setPersons={setPersons}
       />
     </>
   );
