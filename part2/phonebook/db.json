@@ -31,19 +31,14 @@
       "id": 6
     },
     {
-      "name": "Test3",
-      "number": "333",
+      "name": "Test1",
+      "number": "1",
       "id": 7
     },
     {
-      "name": "Test4",
-      "number": "4444",
-      "id": 8
-    },
-    {
       "name": "Test2",
-      "number": "22-22-22-2222",
-      "id": 9
+      "number": "22-2222",
+      "id": 8
     }
   ]
 }

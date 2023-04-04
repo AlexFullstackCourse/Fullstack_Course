@@ -7,7 +7,8 @@ const AddContactForm = ({
   setNewNumber,
   newName,
   setNewName,
-  setSuccessMessage,
+  setStatusMessage,
+  setMessageType,
 }) => {
   const addPerson = (event) => {
     event.preventDefault();
@@ -23,9 +24,11 @@ const AddContactForm = ({
     if (isNotAdded) {
       personService.create(newPerson).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
-        setSuccessMessage(`Added ${newPerson.name} to contacts`);
+        setStatusMessage(`Added ${newPerson.name} to contacts`);
+        setMessageType("success");
         setTimeout(() => {
-          setSuccessMessage(null);
+          setStatusMessage(null);
+          setMessageType(null);
         }, 5000);
       });
     } else {
@@ -37,17 +40,32 @@ const AddContactForm = ({
         let updatedPerson = persons.find((person) => person.name === newName);
         updatedPerson.number = newNumber;
         const tempID = updatedPerson.id;
-        personService.update(tempID, updatedPerson).then((returnedPerson) => {
-          setPersons(
-            persons.map((p) => (p.id !== tempID ? p : returnedPerson))
-          );
-          setSuccessMessage(
-            `Updated contact information of ${updatedPerson.name}`
-          );
-          setTimeout(() => {
-            setSuccessMessage(null);
-          }, 5000);
-        });
+        personService
+          .update(tempID, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((p) => (p.id !== tempID ? p : returnedPerson))
+            );
+            setStatusMessage(
+              `Updated contact information of ${updatedPerson.name}`
+            );
+            setMessageType("success");
+            setTimeout(() => {
+              setStatusMessage(null);
+              setMessageType(null);
+            }, 5000);
+          })
+          .catch((error) => {
+            setStatusMessage(
+              `Information of ${updatedPerson.name} has already been removed from server!`
+            );
+            setMessageType("error");
+            setTimeout(() => {
+              setStatusMessage(null);
+              setMessageType(null);
+            }, 5000);
+            setPersons(persons.filter((person) => person.id !== tempID));
+          });
       }
     }
   };

@@ -11,16 +11,19 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
   const [filter, setFilter] = useState("");
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [statusMessage, setStatusMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((response) => setPersons(response));
   }, []);
 
+  // const messageType = "error";
+
   return (
     <>
       <h2>Phonebook</h2>
-      <Notification message={successMessage} />
+      <Notification message={statusMessage} messageType={messageType} />
       <Filter
         persons={persons}
         setFilteredPersons={setFilteredPersons}
@@ -34,7 +37,8 @@ const App = () => {
         setNewNumber={setNewNumber}
         newName={newName}
         setNewName={setNewName}
-        setSuccessMessage={setSuccessMessage}
+        setStatusMessage={setStatusMessage}
+        setMessageType={setMessageType}
       />
       <h2>Numbers</h2>
       <Contacts
