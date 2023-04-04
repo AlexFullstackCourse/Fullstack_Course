@@ -7,6 +7,7 @@ const AddContactForm = ({
   setNewNumber,
   newName,
   setNewName,
+  setSuccessMessage,
 }) => {
   const addPerson = (event) => {
     event.preventDefault();
@@ -20,9 +21,13 @@ const AddContactForm = ({
     );
 
     if (isNotAdded) {
-      personService
-        .create(newPerson)
-        .then((returnedPerson) => setPersons(persons.concat(returnedPerson)));
+      personService.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setSuccessMessage(`Added ${newPerson.name} to contacts`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      });
     } else {
       if (
         window.confirm(
@@ -32,13 +37,17 @@ const AddContactForm = ({
         let updatedPerson = persons.find((person) => person.name === newName);
         updatedPerson.number = newNumber;
         const tempID = updatedPerson.id;
-        personService
-          .update(tempID, updatedPerson)
-          .then((returnedPerson) =>
-            setPersons(
-              persons.map((p) => (p.id !== tempID ? p : returnedPerson))
-            )
+        personService.update(tempID, updatedPerson).then((returnedPerson) => {
+          setPersons(
+            persons.map((p) => (p.id !== tempID ? p : returnedPerson))
           );
+          setSuccessMessage(
+            `Updated contact information of ${updatedPerson.name}`
+          );
+          setTimeout(() => {
+            setSuccessMessage(null);
+          }, 5000);
+        });
       }
     }
   };

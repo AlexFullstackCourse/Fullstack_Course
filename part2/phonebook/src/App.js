@@ -3,6 +3,7 @@ import personService from "./services/persons";
 import Contacts from "./components/Contacts";
 import Filter from "./components/Filter";
 import AddContactForm from "./components/AddContactForm";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
   const [filter, setFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((response) => setPersons(response));
@@ -18,6 +20,7 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} />
       <Filter
         persons={persons}
         setFilteredPersons={setFilteredPersons}
@@ -31,6 +34,7 @@ const App = () => {
         setNewNumber={setNewNumber}
         newName={newName}
         setNewName={setNewName}
+        setSuccessMessage={setSuccessMessage}
       />
       <h2>Numbers</h2>
       <Contacts
