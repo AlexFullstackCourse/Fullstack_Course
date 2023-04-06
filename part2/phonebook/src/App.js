@@ -18,8 +18,6 @@ const App = () => {
     personService.getAll().then((response) => setPersons(response));
   }, []);
 
-  // const messageType = "error";
-
   return (
     <>
       <h2>Phonebook</h2>
