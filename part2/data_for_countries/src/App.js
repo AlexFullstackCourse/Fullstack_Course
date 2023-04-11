@@ -3,21 +3,18 @@ import axios from "axios";
 
 const api_key = process.env.REACT_APP_API_KEY;
 
-const Weather = ({
-  countryCapital,
-  latCapital,
-  lonCapital,
-  weatherData,
-  setWeatherData,
-}) => {
-  /**Don't do the get request here. Or at least don't use a state funciton to save the data */
-  /*axios
+const getWeatherData = (latCapital, lonCapital) => {
+  return axios
     .get(
       `https://api.openweathermap.org/data/2.5/weather?lat=${latCapital}&lon=${lonCapital}&appid=${api_key}&units=metric`
     )
-    .then((response) => setWeatherData(response.data));*/
+    .then((response) => {
+      return response.data;
+    });
+};
 
-  console.log("weather data: ", weatherData);
+const Weather = ({ countryCapital, latCapital, lonCapital }) => {
+  // console.log("Temperature: ", weatherData.main.temp);
   return (
     <>
       <h2>Weather in {countryCapital}</h2>
@@ -30,8 +27,7 @@ const Weather = ({
 const DisplayCountries = ({
   countriesDisplayList,
   showCountry,
-  weatherData,
-  setWeatherData,
+  //setLoadWeatherData,
 }) => {
   /** Do not display anything if the list is empty */
   if (countriesDisplayList !== []) {
@@ -44,10 +40,9 @@ const DisplayCountries = ({
       const countryCapital = countriesDisplayList[0].capital[0];
       const latCapital = countriesDisplayList[0].capitalInfo.latlng[0];
       const lonCapital = countriesDisplayList[0].capitalInfo.latlng[1];
+      //setLoadWeatherData(true);
 
-      // console.log();
-
-      console.log(countriesDisplayList[0]);
+      //console.log(countriesDisplayList[0]);
       return (
         <div>
           <h1>{countriesDisplayList[0].name.common}</h1>
@@ -73,8 +68,6 @@ const DisplayCountries = ({
             countryCapital={countryCapital}
             lonCapital={lonCapital}
             latCapital={latCapital}
-            weatherData={weatherData}
-            setWeatherData={setWeatherData}
           />
         </div>
       );
@@ -96,7 +89,8 @@ const App = () => {
   const [value, setValue] = useState("");
   const [countriesList, setCountriesList] = useState([]);
   const [countriesDisplayList, setCountriesDisplayList] = useState([]);
-  const [weatherData, setWeatherData] = useState(null);
+  //const [loadWeatherData, setLoadWeatherData] = useState(false);
+  //const [weatherDataTest, setWeatherDataTest] = useState("");
 
   useEffect(() => {
     axios
@@ -111,7 +105,7 @@ const App = () => {
         if (
           countriesList[i].name.common
             .toLowerCase()
-            .includes(value.toLocaleLowerCase())
+            .includes(value.toLowerCase())
         ) {
           countriesTemp = countriesTemp.concat(countriesList[i]);
         }
@@ -121,6 +115,23 @@ const App = () => {
       setCountriesDisplayList([]);
     }
   }, [value, countriesList]);
+
+  /** Let's see if useEffect does the trick. Answer: It does not.*/
+  /*
+  useEffect(() => {
+    if (loadWeatherData) {
+      const latCapital = countriesDisplayList[0].capitalInfo.latlng[0];
+      const lonCapital = countriesDisplayList[0].capitalInfo.latlng[1];
+      console.log("lat, lon: ", latCapital, lonCapital);
+
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${latCapital}&lon=${lonCapital}&appid=${api_key}&units=metric`
+        )
+        .then((response) => setWeatherDataTest(response.data));
+      setLoadWeatherData(false);
+    }
+  }, [loadWeatherData, countriesDisplayList]);*/
 
   const handleCountriesInput = (event) => {
     setValue(event.target.value);
@@ -140,8 +151,7 @@ const App = () => {
       <DisplayCountries
         countriesDisplayList={countriesDisplayList}
         showCountry={showCountry}
-        weatherData={weatherData}
-        setWeatherData={setWeatherData}
+        //setLoadWeatherData={setLoadWeatherData}
       />
     </>
   );
