@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("build"));
 
+/** Can be removed after the delete method is defined to use the database */
 let notes = [
   {
     id: 1,
@@ -27,11 +28,13 @@ let notes = [
   },
 ];
 
+/** Should probably be deleted */
 const generateID = () => {
   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
   return maxId + 1;
 };
 
+/** Gets overwritten because of app.use(express.static("build")) */
 app.get("/", (request, resonse) => {
   resonse.send("<h1>Hello World!</h1>");
 });
@@ -43,33 +46,28 @@ app.get("/api/notes", (request, response) => {
 });
 
 app.get("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const note = notes.find((note) => note.id === id);
-  if (note) {
+  Note.findById(request.params.id).then((note) => {
     response.json(note);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 app.post("/api/notes", (request, response) => {
   const body = request.body;
 
-  if (!body.content) {
+  if (body.content === undefined) {
     return response.status(400).json({
       error: "Content missing",
     });
   }
 
-  const note = {
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    id: generateID(),
-  };
+  });
 
-  notes = notes.concat(note);
-
-  response.json(note);
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 
 app.delete("/api/notes/:id", (request, response) => {
