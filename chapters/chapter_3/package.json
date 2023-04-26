@@ -8,7 +8,8 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: No test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ../chapter_2 && npm run build && cp -r build ../chapter_3",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
   },
   "author": "Alexander Heidorn",
   "license": "MIT",
@@ -19,6 +20,7 @@
     "mongoose": "^7.0.3"
   },
   "devDependencies": {
+    "eslint": "^8.39.0",
     "nodemon": "^2.0.22"
   }
 }
