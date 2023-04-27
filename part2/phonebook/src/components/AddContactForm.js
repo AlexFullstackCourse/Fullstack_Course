@@ -17,29 +17,40 @@ const AddContactForm = ({
       number: newNumber,
     };
 
-    const isNotAdded = !persons.find(
-      (element) => newPerson.name === element.name
-    );
+    const isNotAdded = !persons.find((p) => newPerson.name === p.name);
 
     if (isNotAdded) {
-      personService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setStatusMessage(`Added ${newPerson.name} to contacts`);
-        setMessageType("success");
-        setTimeout(() => {
-          setStatusMessage(null);
-          setMessageType(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setStatusMessage(`Added ${newPerson.name} to contacts`);
+          setMessageType("success");
+          setTimeout(() => {
+            setStatusMessage(null);
+            setMessageType(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setStatusMessage(error.response.data.error);
+          setMessageType("error");
+          setTimeout(() => {
+            setStatusMessage(null);
+            setMessageType(null);
+          }, 5000);
+        });
     } else {
       if (
         window.confirm(
           `${newName} is already added to phonebook. Replace old number with a new one?`
         )
       ) {
-        let updatedPerson = persons.find((person) => person.name === newName);
+        let updatedPerson = structuredClone(
+          persons.find((person) => person.name === newName)
+        );
         updatedPerson.number = newNumber;
         const tempID = updatedPerson.id;
+
         personService
           .update(tempID, updatedPerson)
           .then((returnedPerson) => {
@@ -56,15 +67,24 @@ const AddContactForm = ({
             }, 5000);
           })
           .catch((error) => {
-            setStatusMessage(
-              `Information of ${updatedPerson.name} has already been removed from server!`
-            );
-            setMessageType("error");
-            setTimeout(() => {
-              setStatusMessage(null);
-              setMessageType(null);
-            }, 5000);
-            setPersons(persons.filter((person) => person.id !== tempID));
+            if (error.response.data.errorName === "ValidationError") {
+              setStatusMessage(error.response.data.error);
+              setMessageType("error");
+              setTimeout(() => {
+                setStatusMessage(null);
+                setMessageType(null);
+              }, 5000);
+            } else {
+              setStatusMessage(
+                `Information of ${updatedPerson.name} has already been removed from server!`
+              );
+              setMessageType("error");
+              setTimeout(() => {
+                setStatusMessage(null);
+                setMessageType(null);
+              }, 5000);
+              setPersons(persons.filter((person) => person.id !== tempID));
+            }
           });
       }
     }

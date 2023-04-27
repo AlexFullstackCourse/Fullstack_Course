@@ -7,7 +7,7 @@ const Contacts = ({
   setPersons,
   setFilteredPersons,
 }) => {
-  const handleDeleteTest = (id, name) => {
+  const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name} from Contacts?`)) {
       personService.remove(id);
       setPersons(persons.filter((person) => person.id !== id));
@@ -23,7 +23,7 @@ const Contacts = ({
     return persons.map((person) => (
       <div key={person.name}>
         {person.name} {person.number}
-        <button onClick={() => handleDeleteTest(person.id, person.name)}>
+        <button onClick={() => handleDelete(person.id, person.name)}>
           Delete
         </button>
         <br />
@@ -33,7 +33,7 @@ const Contacts = ({
     return filteredPersons.map((person) => (
       <div key={person.name}>
         {person.name} {person.number}
-        <button onClick={() => handleDeleteTest(person.id, person.name)}>
+        <button onClick={() => handleDelete(person.id, person.name)}>
           Delete
         </button>
         <br />

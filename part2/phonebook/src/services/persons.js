@@ -1,3 +1,4 @@
+/** Module handling the communication with the backend */
 import axios from "axios";
 
 const baseURL = "/api/persons";
@@ -21,11 +22,11 @@ const remove = (id) => {
   return axios.delete(`${baseURL}/${id}`);
 };
 
-const exportObject = {
+const personService = {
   getAll,
   create,
   update,
   remove,
 };
 
-export default exportObject;
+export default personService;
