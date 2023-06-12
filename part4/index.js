@@ -36,6 +36,9 @@ app.get("/api/blogs", (request, response) => {
 app.post("/api/blogs", (request, response) => {
   const blog = new Blog(request.body);
 
+  logger.info("blog:", blog);
+  logger.info("request.body: ", request.body);
+
   blog.save().then((result) => {
     response.status(201).json(result);
   });

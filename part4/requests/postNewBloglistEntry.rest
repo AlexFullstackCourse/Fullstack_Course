@@ -1,10 +1,9 @@
 POST http://localhost:3003/api/blogs
+content-type: application/json
 
-[
-    {
-        title: "REST blog",
-        author: "REST-MAN",
-        url: "http://rest-blog.rest/rest-blog",
-        likes: 12
-    }
-]
+{
+"title": "BLOG2",
+"author": "BLOG2-Author",
+"url": "http://blog2.blog2/second-blog",
+"likes": 2
+}
