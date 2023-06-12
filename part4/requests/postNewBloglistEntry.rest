@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+
+[
+    {
+        title: "REST blog",
+        author: "REST-MAN",
+        url: "http://rest-blog.rest/rest-blog",
+        likes: 12
+    }
+]
