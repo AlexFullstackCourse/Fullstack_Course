@@ -16,8 +16,20 @@ const favoriteBlog = (blogs) => {
   return favBlog;
 };
 
+const mostBlogs = (blogs) => {
+  const authors = blogs.map((blog) => blog.author);
+  return authors
+    .sort(
+      (a, b) =>
+        authors.filter((author) => author === a).length -
+        authors.filter((author) => author === b).length
+    )
+    .pop();
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };
