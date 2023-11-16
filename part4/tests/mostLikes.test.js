@@ -1,6 +1,6 @@
 const listHelper = require("../utils/list_helper");
 
-describe("Author with the most blogs", () => {
+describe("Author with the most likes and the number likes", () => {
   const listwithSeveralBlogs = [
     {
       _id: "5a422a851b54a676234d17f7",
@@ -125,23 +125,8 @@ describe("Author with the most blogs", () => {
     },
   ];
 
-  test("from a list with several blogs with different authors is displayed", () => {
-    const result = listHelper.mostBlogs(listwithSeveralBlogs);
-    expect(result).toMatchObject({ author: "Robert C. Martin", blogs: 3 });
-  });
-
-  test("from a list with several blogs with the same author is displayed", () => {
-    const result = listHelper.mostBlogs(listWithOnlyOneAuthor);
-    expect(result).toMatchObject({ author: "Edsger W. Dijkstra", blogs: 3 });
-  });
-
-  test("from a list with only one blog is the author of the blog", () => {
-    const result = listHelper.mostBlogs(listWithOneBlog);
-    expect(result).toMatchObject({ author: "Edsger W. Dijkstra", blogs: 1 });
-  });
-
-  test("from a list with two authors having the same number of blogs is the last one in the list", () => {
-    const result = listHelper.mostBlogs(listwithTwoAuthorsWithEquallyManyBlogs);
-    expect(result).toMatchObject({ author: "Robert C. Martin", blogs: 2 });
+  test("for a list with several blogs is displayed correctly", () => {
+    const result = listHelper.mostLikes(listwithSeveralBlogs);
+    expect(result).toMatchObject({ author: "Edsger W. Dijkstra", likes: 17 });
   });
 });

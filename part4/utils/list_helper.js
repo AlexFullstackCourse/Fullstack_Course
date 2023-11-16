@@ -18,13 +18,46 @@ const favoriteBlog = (blogs) => {
 
 const mostBlogs = (blogs) => {
   const authors = blogs.map((blog) => blog.author);
-  return authors
+  const authorsToSort = authors.slice(0);
+  const authorWithMostBlogs = authorsToSort
     .sort(
       (a, b) =>
         authors.filter((author) => author === a).length -
         authors.filter((author) => author === b).length
     )
     .pop();
+
+  const amountMostBlogs = authors.filter(
+    (author) => author === authorWithMostBlogs
+  ).length;
+
+  return {
+    author: authorWithMostBlogs,
+    blogs: amountMostBlogs,
+  };
+};
+
+const mostLikes = (blogs) => {
+  const authors = Array.from(new Set(blogs.map((blog) => blog.author)));
+  const likesList = [];
+
+  authors.forEach((author) => {
+    currentLikes = blogs.reduce(
+      (sum, currentBlog) =>
+        currentBlog.author === author ? sum + currentBlog.likes : sum,
+      0
+    );
+    likesList.push(currentLikes);
+  });
+
+  const indexMostLikes = likesList.indexOf(Math.max.apply(Math, likesList));
+  const mostLikedAuthor = authors[indexMostLikes];
+  const mostLikes = likesList[indexMostLikes];
+
+  return {
+    author: mostLikedAuthor,
+    likes: mostLikes,
+  };
 };
 
 module.exports = {
@@ -32,4 +65,5 @@ module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
